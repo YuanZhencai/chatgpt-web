@@ -1,6 +1,8 @@
 import path from 'path'
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import visualizer from 'rollup-plugin-visualizer'
+import importToCDN from 'vite-plugin-cdn-import'
 
 export default defineConfig((env) => {
   const viteEnv = loadEnv(env.mode, process.cwd()) as unknown as ImportMetaEnv
@@ -11,7 +13,18 @@ export default defineConfig((env) => {
         '@': path.resolve(process.cwd(), 'src'),
       },
     },
-    plugins: [vue()],
+    plugins: [
+      vue(),
+      visualizer({ open: true }),
+      importToCDN({
+        modules: [{
+          name: 'highlight.js',
+          var: 'hljs',
+          path: 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js',
+          css: 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css',
+        }],
+      }),
+    ],
     server: {
       host: '0.0.0.0',
       port: 1002,
